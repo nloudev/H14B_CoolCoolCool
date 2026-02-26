@@ -1,0 +1,20 @@
+{
+  "name": "h14b_coolcoolcool",
+  "version": "1.0.0",
+  "description": "Minimal Express API with Swagger UI",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "keywords": [
+    "express",
+    "swagger",
+    "openapi"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
