@@ -45,6 +45,30 @@ Write the `DELETE /orders/{id}` endpoint that removes the record
 | `/orders/{id}` FR-01 | Delete an order record | Path: `id` (int) | HTTP 200: `{ message: string }`, HTTP 401: Token is invalid HTTP 404: Order not found | DELETE |
 
 
+Feilds calculated by the API (not in JSON input):
+`Per item:
+LineExtensionAmount = quantity × priceAmount
+e.g.
+LINE-1: 2 × 299.99 = 599.98
+LINE-2: 1 × 29.99 = 29.99`
+
+
+`BaseQuantity = always 1 (hardcoded, not passed)`
+
+`Tax total:
+TaxableAmount = sum of all LineExtensionAmounts = 599.98 + 29.99 = 629.97
+TaxAmount = TaxableAmount × (taxPercent / 100) = 629.97 × 0.10 = 63.00`
+
+`Anticipated monetary total:
+LineExtensionAmount = sum of all line LineExtensionAmounts = 629.97
+PayableAmount = LineExtensionAmount + TaxAmount = 629.97 + 63.00 = 692.97`
+
+Also auto-generated (not in JSON, not calculated from inputs):
+
+`UBLVersionID = always hardcoded as "2.1"`
+`TaxScheme/ID in TaxSubtotal = copied from tax.taxTypeCode = "GST"`
+`currencyID attribute on every monetary amount = copied from order.currencyID = "AUD"`
+
 
 ## Inputs: Accepted & Omitted
 
