@@ -28,8 +28,11 @@ Minimal Node.js + Express API with Swagger documentation.
 Look at expected input/output in /src
 
 Write the `POST /orders` endpoint that accepts the JSON and returns the XML
+
 Write the `GET /orders/{id}` endpoint that retrieves a stored order
+
 Write the `PUT /orders/{id}` endpoint that updates a record and regenerates the XML
+
 Write the `DELETE /orders/{id}` endpoint that removes the record
  
 ### !!! 🔴 FOLLOW THIS INTERFACE NOT THE ONE ON CONFLUENCE
