@@ -46,6 +46,8 @@ Write the `DELETE /orders/{id}` endpoint that removes the record
 
 
 Feilds calculated by the API (not in JSON input):
+
+
 `Per item:
 LineExtensionAmount = quantity × priceAmount
 e.g.
