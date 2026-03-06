@@ -35,7 +35,7 @@ Write the `PUT /orders/{id}` endpoint that updates a record and regenerates the 
 
 Write the `DELETE /orders/{id}` endpoint that removes the record
  
-### !!! 🔴 FOLLOW THIS INTERFACE NOT THE ONE ON CONFLUENCE
+Interfaces to implement:
 
 | Route Name | Description | Parameters | Return | CRUD |
 |---|---|---|---|---|
