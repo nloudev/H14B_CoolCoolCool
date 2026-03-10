@@ -47,7 +47,7 @@ const swaggerSpec = swaggerJSDoc(options);
  *                   example: ok
  */
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ status: string, uptime: int, timestamp: datetime });
 });
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
