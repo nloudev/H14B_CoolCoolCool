@@ -4,7 +4,8 @@
   "description": "Minimal Express API with Swagger UI",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "test": "jest"
   },
   "keywords": [
     "express",

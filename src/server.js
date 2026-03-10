@@ -60,3 +60,9 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
   console.log(`Swagger UI available at http://localhost:${port}/api-docs`);
 });
+
+// todo implement
+app.post('/orders', (req, res) => {
+  const order = req.body; // Access the data sent in the request body
+  res.status(201).send(newItem); // Send a success response and the created item
+});
