@@ -1,4 +1,6 @@
 const input = require('../input.js');
+const outputs_database = 'src/outputs_database';
+const outputs_database_expected = 'src/tests/expected_outputs/outputs_database_expected1';
 const fs = require('fs');
 const app = require('../server.js');
 
@@ -22,6 +24,7 @@ afterAll((done) => {
         setTimeout(done, 100); 
     });
 });
+
 test('test create_xml function directly', () => {
     const creation_input = fs.readFileSync(inputPath, 'utf-8');
     const expectedContent = fs.readFileSync(expectedPath, 'utf-8');
@@ -67,7 +70,7 @@ test('HTTP 422: should return error for missing required fields', async () => {
 test('test create_xml through server', async ()=>{
     const expected1 = fs.readFileSync(expectedPath, 'utf-8');
     
-    const response = await fetch(`${url}/order`, {
+    const response = await fetch(`${url}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(inputPath)
@@ -85,5 +88,23 @@ test('test create_xml through server', async ()=>{
         loyaltyPointsEarned: expect.any(Number),
         loyaltyPointsRedeemed: expect.any(Number),
         ublDocument: expect.toEqual(expected1)
-      });
-})
+    });
+
+    const actualOutput = fs.readFileSync(outputs_database, 'utf-8');
+    const expectedContent = fs.readFileSync(outputs_database_expected, 'utf-8');
+    expect(actualOutput).toEqual(expectedContent);
+});
+
+test('test create_xml through server, database correct', async ()=>{
+    const response = await fetch(`${url}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(inputPath)
+    });
+
+    expect(response.status).toBe(200);
+
+    const actualOutput = fs.readFileSync(outputs_database, 'utf-8');
+    const expectedContent = fs.readFileSync(outputs_database_expected, 'utf-8');
+    expect(actualOutput).toEqual(expectedContent);
+});
