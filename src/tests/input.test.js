@@ -1,13 +1,13 @@
-const outputs_database = 'src/outputs_database';
-const outputs_database_expected = 'src/tests/expected_outputs/outputs_database_expected1';
 const fs = require('fs');
 const app = require('../server.js');
 const { create_xml } = require('../input.js');
 
+const outputs_database = 'src/outputs_database';
+const outputs_database_expected = 'src/tests/expected_outputs/outputs_database_expected1';
+
 const creation_input = fs.readFileSync('src/tests/test_inputs/creation_input_1.json', 'utf-8');
-const actualContent = fs.readFileSync('src/creation_output.xml', 'utf-8');
 const creation_input_missing = fs.readFileSync('src/tests/test_inputs/creation_input_missing.json', 'utf-8');
-const expectedContent = fs.readFileSync('src/tests/expected_outputs/creation_expected_1.xml', 'utf-8');
+const creation_expectedContent = fs.readFileSync('src/tests/expected_outputs/creation_expected_1.xml', 'utf-8');
 
 let server;
 let url;
@@ -28,7 +28,7 @@ afterAll((done) => {
 
 test('test create_xml function directly', () => {
     create_xml(JSON.parse(creation_input));
-    expect(fs.readFileSync('src/creation_output.xml', 'utf-8').replace(/\s/g, '')).toEqual(expectedContent.replace(/\s/g, ''));
+    expect(fs.readFileSync('src/creation_output.xml', 'utf-8').replace(/\s/g, '')).toEqual(creation_expectedContent.replace(/\s/g, ''));
 });
 
 test('HTTP 400: should return error for bad request (malformed JSON)', async () => {
@@ -77,7 +77,6 @@ test('test create_xml through server', async ()=>{
         },
         body: creation_input
     });
-
     expect(response.status).toBe(200);
 
     const data = await response.json();
@@ -93,7 +92,7 @@ test('test create_xml through server', async ()=>{
         ublDocument: expect.any(String)
     });
 
-    expect(fs.readFileSync('src/creation_output.xml', 'utf-8').replace(/\s/g, '')).toEqual(expectedContent.replace(/\s/g, ''));
+    expect(fs.readFileSync('src/creation_output.xml', 'utf-8').replace(/\s/g, '')).toEqual(creation_expectedContent.replace(/\s/g, ''));
 });
 
 test('test create_xml through server, database correct', async ()=>{
@@ -107,7 +106,6 @@ test('test create_xml through server, database correct', async ()=>{
     });
 
     expect(response.status).toBe(200);
-
     const actualOutput = fs.readFileSync(outputs_database, 'utf-8').replace(/\s/g, '');;
     const expectedContent = fs.readFileSync(outputs_database_expected, 'utf-8').replace(/\s/g, '');;
     expect(actualOutput).toEqual(expectedContent);
