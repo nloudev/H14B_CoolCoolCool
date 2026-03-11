@@ -4,8 +4,8 @@
        xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
 
   <cbc:UBLVersionID>2.1</cbc:UBLVersionID>
-  <cbc:ID>ORD-2025-001</cbc:ID>
-  <cbc:IssueDate>2025-04-01</cbc:IssueDate>
+  <cbc:ID>ORD-2025-002</cbc:ID>
+  <cbc:IssueDate>2028-04-01</cbc:IssueDate>
   <cbc:Note>Please leave at front door</cbc:Note>
   <cbc:DocumentCurrencyCode>AUD</cbc:DocumentCurrencyCode>
   <cac:OrderDocumentReference>
@@ -15,7 +15,7 @@
   <cac:BuyerCustomerParty>
     <cac:Party>
       <cac:PartyName>
-        <cbc:Name>John Smith</cbc:Name>
+        <cbc:Name>Jane Smith</cbc:Name>
       </cac:PartyName>
       <cac:PostalAddress>
         <cbc:StreetName>123 Main Street</cbc:StreetName>

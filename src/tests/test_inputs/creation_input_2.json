@@ -1,0 +1,71 @@
+{
+  "order": {
+    "id": "ORD-2025-002",
+    "issueDate": "2028-04-01",
+    "note": "Please leave at front door",
+    "currencyID": "AUD",
+    "orderDocumentReference": "ORD-2025-000"
+  },
+  "buyer": {
+    "name": "Jane Smith",
+    "street": "123 Main Street",
+    "city": "Sydney",
+    "postalCode": "2000",
+    "countryCode": "AU",
+    "companyId": "123456789",
+    "legalEntityId": "123456789",
+    "taxSchemeId": "GST",
+    "contactName": "John Smith",
+    "contactPhone": "0400000000",
+    "contactEmail": "john@email.com"
+  },
+  "seller": {
+    "name": "Hardware Co Pty Ltd",
+    "street": "456 Trade Street",
+    "city": "Melbourne",
+    "postalCode": "3000",
+    "countryCode": "AU",
+    "companyId": "987654321",
+    "legalEntityId": "987654321",
+    "taxSchemeId": "GST",
+    "contactName": "Jane Doe",
+    "contactPhone": "0411111111",
+    "contactEmail": "jane@hardwareco.com"
+  },
+  "delivery": {
+    "street": "123 Main Street",
+    "city": "Sydney",
+    "postalCode": "2000",
+    "countryCode": "AU",
+    "requestedStartDate": "2025-04-05",
+    "requestedEndDate": "2025-04-07"
+  },
+  "tax": {
+    "taxTypeCode": "GST",
+    "taxPercent": 10.0
+  },
+  "items": [
+    {
+      "id": "LINE-1",
+      "product": {
+        "sellersItemId": "PROD-101",
+        "name": "Vacuum Cleaner X200",
+        "description": "Bagless upright vacuum cleaner 2200W"
+      },
+      "quantity": 2,
+      "unitCode": "EA",
+      "priceAmount": 299.99
+    },
+    {
+      "id": "LINE-2",
+      "product": {
+        "sellersItemId": "PROD-205",
+        "name": "Vacuum Filter Pack",
+        "description": "Replacement HEPA filter pack, 3 pack"
+      },
+      "quantity": 1,
+      "unitCode": "EA",
+      "priceAmount": 29.99
+    }
+  ]
+}
