@@ -1,5 +1,5 @@
 const fs = require('node:fs');
-const path = require('node:path'); // Good practice for file paths
+const path = require('node:path');
 
 function create_xml(inputs) {
   if (!inputs || !inputs.order) return;
@@ -32,8 +32,6 @@ function create_xml(inputs) {
     </cac:LineItem>
   </cac:OrderLine>`).join('\n');
 
-  // The template literal below strictly follows the indentation and blank line 
-  // spacing found in creation_expected_1.xml
   const content = `<?xml version="1.0" encoding="UTF-8"?>
 <Order xmlns="urn:oasis:names:specification:ubl:schema:xsd:Order-2"
        xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"

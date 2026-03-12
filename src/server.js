@@ -7,6 +7,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const { create_xml } = require('./input.js');
+const database_path = 'src/outputs_database';
+const creation_output_path = 'src/creation_output.xml';
 
 // --- SWAGGER CONFIG ---
 const swaggerDefinition = {
@@ -17,7 +19,7 @@ const swaggerDefinition = {
 
 const options = { swaggerDefinition, apis: ['./src/server.js'] };
 const swaggerSpec = swaggerJSDoc(options);
-
+app.use(express.json());
 /**
  * @swagger
  * /health:
@@ -77,8 +79,10 @@ app.post('/orders', (req, res) => {
         anticipatedMonetaryTotal: -1, 
         loyaltyPointsEarned: -1, 
         loyaltyPointsRedeemed: -1, 
-        ublDocument: fs.readFileSync('src/creation_output.xml', 'utf-8')
+        ublDocument: fs.readFileSync(creation_output_path, 'utf-8')
     });
+    
+    fs.appendFileSync(database_path, `order ${order.id}: {\n${fs.readFileSync(creation_output_path, 'utf-8')}\n}`);
 });
 
 // --- ERROR HANDLING ---
