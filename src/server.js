@@ -45,14 +45,14 @@ app.get('/health', (req, res) => {
 
 /**
  * @swagger
- * /orders/{orderId}:
+ * /orders/{id}:
  *   delete:
  *     summary: Delete an order
  *     tags:
  *       - Orders
  *     parameters:
  *       - in: path
- *         name: orderId
+ *         name: id
  *         required: true
  *         schema:
  *           type: string
@@ -68,21 +68,21 @@ app.get('/health', (req, res) => {
  *                 message:
  *                   type: string
  *                   example: Order deleted successfully
- *                 orderId:
+ *                 id:
  *                   type: string
  *       404:
  *         description: Order not found
  *       403:
  *         description: Not Authorised to delete
  */
-app.delete('/order/:orderId', (req, res) => {
-  const { orderId } = req.params; 
+app.delete('/order/:id', (req, res) => {
+  const { id } = req.params; 
 
   // deletion logic
 
   res.json({
     message: 'Order deleted successfully',
-    orderId: orderId,
+    id: id,
     deleteAt: new Date().toISOString()
   });
 });
