@@ -50,6 +50,50 @@ app.get('/health', (req, res) => {
   res.json({ status: string, uptime: int, timestamp: datetime });
 });
 
+/**
+ * @swagger
+ * /orders/{orderId}:
+ *   delete:
+ *     summary: Delete an order
+ *     tags:
+ *       - Orders
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the order to delete 
+ *     responses:
+ *       200:
+ *         description: Order deleted succesfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Order deleted successfully
+ *                 orderId:
+ *                   type: string
+ *       404:
+ *         description: Order not found
+ *       403:
+ *         description: Not Authorised to delete
+ */
+app.delete('/order/:orderId', (req, res) => {
+  const { orderId } = req.params; 
+
+  // deletion logic
+
+  res.json({
+    message: 'Order deleted successfully',
+    orderId: orderId,
+    deleteAt: new Date().toISOString()
+  });
+});
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get('/openapi.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
