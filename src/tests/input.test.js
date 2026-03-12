@@ -13,7 +13,7 @@ const creation_expectedContent = fs.readFileSync('src/tests/expected_outputs/cre
 let server;
 let url;
 
-beforeAll((done) => {
+beforeAll((done) => {  
     server = app.listen(0, () => {
         const port = server.address().port;
         url = `http://localhost:${port}`;
@@ -97,6 +97,7 @@ test('test create_xml through server', async ()=>{
 });
 
 test('test create_xml through server, database correct', async ()=>{
+    fs.writeFileSync(outputs_database, '');
     const response = await fetch(`${url}/orders`, {
         method: 'POST',
         headers: { 
@@ -105,7 +106,6 @@ test('test create_xml through server, database correct', async ()=>{
         },
         body: creation_input1
     });
-
     expect(response.status).toBe(200);
     const actualOutput = fs.readFileSync(outputs_database, 'utf-8').replace(/\s/g, '');;
     const expectedContent = fs.readFileSync(outputs_database_expected, 'utf-8').replace(/\s/g, '');;
@@ -113,6 +113,7 @@ test('test create_xml through server, database correct', async ()=>{
 });
 
 test('test multiple creations through server, database correct', async ()=>{
+    fs.writeFileSync(outputs_database, '');
     const response = await fetch(`${url}/orders`, {
         method: 'POST',
         headers: { 
