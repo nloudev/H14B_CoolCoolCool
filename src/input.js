@@ -5,11 +5,6 @@ function create_xml(inputs) {
   if (!inputs || !inputs.order) return;
 
   const currency = inputs.order.currencyID;
-  const taxRate = inputs.tax.taxPercent / 100;
-
-  const lineExtensionAmount = inputs.items.reduce((sum, item) => sum + (item.quantity * item.priceAmount), 0);
-  const taxAmount = lineExtensionAmount * taxRate;
-  const payableAmount = lineExtensionAmount + taxAmount;
 
   // Map items with a blank line between each <cac:OrderLine> block
   const itemsXml = inputs.items.map(item => `
@@ -124,10 +119,10 @@ function create_xml(inputs) {
   </cac:Delivery>
 
   <cac:TaxTotal>
-    <cbc:TaxAmount currencyID="${currency}">${taxAmount.toFixed(2)}</cbc:TaxAmount>
+    <cbc:TaxAmount currencyID="${currency}">${getTaxAmount(inputs).toFixed(2)}</cbc:TaxAmount>
     <cac:TaxSubtotal>
-      <cbc:TaxableAmount currencyID="${currency}">${lineExtensionAmount.toFixed(2)}</cbc:TaxableAmount>
-      <cbc:TaxAmount currencyID="${currency}">${taxAmount.toFixed(2)}</cbc:TaxAmount>
+      <cbc:TaxableAmount currencyID="${currency}">${getLineExtension(inputs).toFixed(2)}</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="${currency}">${getTaxAmount(inputs).toFixed(2)}</cbc:TaxAmount>
       <cac:TaxCategory>
         <cbc:Percent>${inputs.tax.taxPercent.toFixed(1)}</cbc:Percent>
         <cac:TaxScheme>
@@ -138,8 +133,8 @@ function create_xml(inputs) {
   </cac:TaxTotal>
 
   <cac:AnticipatedMonetaryTotal>
-    <cbc:LineExtensionAmount currencyID="${currency}">${lineExtensionAmount.toFixed(2)}</cbc:LineExtensionAmount>
-    <cbc:PayableAmount currencyID="${currency}">${payableAmount.toFixed(2)}</cbc:PayableAmount>
+    <cbc:LineExtensionAmount currencyID="${currency}">${getLineExtension(inputs).toFixed(2)}</cbc:LineExtensionAmount>
+    <cbc:PayableAmount currencyID="${currency}">${getPayableAmount(inputs).toFixed(2)}</cbc:PayableAmount>
   </cac:AnticipatedMonetaryTotal>
 ${itemsXml}
 
@@ -147,4 +142,18 @@ ${itemsXml}
 
   fs.writeFileSync('src/creation_output.xml', content, 'utf8');
 }
-module.exports = { create_xml };
+
+function getLineExtension(inputs) {
+  return inputs.items.reduce((sum, item) => sum + (item.quantity * item.priceAmount), 0);
+}
+
+function getTaxAmount(inputs) {
+  const lineExtensionAmount = getLineExtension(inputs);
+  return (lineExtensionAmount * (inputs.tax.taxPercent / 100));
+}
+
+function getPayableAmount(inputs) {
+  return (getLineExtension(inputs) + getTaxAmount(inputs));
+}
+
+module.exports = { create_xml, getLineExtension, getTaxAmount, getPayableAmount };
