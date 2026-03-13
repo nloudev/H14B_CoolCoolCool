@@ -17,8 +17,6 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 import { create_xml, getLineExtension, getTaxAmount, getPayableAmount } from './input.js';
-const creation_output_path = 'src/creation_output.xml';
-
 const loyalty_point_coeff = 0.08;
 
 // --- SWAGGER CONFIG ---
@@ -113,7 +111,6 @@ app.post('/orders', async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        // This will send the ACTUAL error message back to your curl command
         res.status(500).json({ 
             message: "Vercel Error", 
             detail: error.message,
