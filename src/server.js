@@ -7,7 +7,11 @@ import 'dotenv/config'; // This automatically loads your .env variables
 
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+let prisma;
+if (!global.prisma) {
+  global.prisma = new PrismaClient();
+}
+prisma = global.prisma;
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -46,12 +50,12 @@ app.use(express.json());
  *                   type: string
  *                   example: ok
  */
-app.get('/health', (req, res) => {
-  res.json({ status: string, uptime: int, timestamp: datetime });
-});
+
 
 // --- ROUTES ---
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/health', (req, res) => {
+  res.json({ status: "ok", uptime: process.uptime(), timestamp:  new Date().toISOString()});
+});
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.post('/orders', async (req, res) => {
