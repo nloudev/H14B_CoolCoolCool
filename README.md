@@ -65,6 +65,8 @@ TaxAmount = TaxableAmount × (taxPercent / 100) = 629.97 × 0.10 = 63.00`
 LineExtensionAmount = sum of all line LineExtensionAmounts = 629.97
 PayableAmount = LineExtensionAmount + TaxAmount = 629.97 + 63.00 = 692.97`
 
+LoyaltyPoints are added based on a coefficient * PayableAmount.
+
 Also auto-generated (not in JSON, not calculated from inputs):
 
 `UBLVersionID = always hardcoded as "2.1"`
