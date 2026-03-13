@@ -1,9 +1,9 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-const fs = require('fs');
-const app = require('../server.js');
-const { create_xml } = require('../input.js');
+import fs from 'fs';
+import app from '../server.js';
+import { create_xml } from '../input.js';
 
 const creation_input1 = fs.readFileSync('src/tests/test_inputs/creation_input_1.json', 'utf-8');
 const creation_input2 = fs.readFileSync('src/tests/test_inputs/creation_input_2.json', 'utf-8');

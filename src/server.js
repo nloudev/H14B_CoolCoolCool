@@ -1,17 +1,17 @@
 import express from 'express';
+
+import swaggerUi from 'swagger-ui-express';
+import swaggerJSDoc from 'swagger-jsdoc';
+import fs from 'fs';
+import 'dotenv/config'; // This automatically loads your .env variables
 import { PrismaClient } from '@prisma/client';
 
-const swaggerUi = require('swagger-ui-express');
-const swaggerJSDoc = require('swagger-jsdoc');
-const fs = require('fs');
-
-const dotenv = require ('dotenv/config');
 const prisma = new PrismaClient();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-const { create_xml, getLineExtension, getTaxAmount, getPayableAmount } = require('./input.js');
+import { create_xml, getLineExtension, getTaxAmount, getPayableAmount } from './input.js';
 const creation_output_path = 'src/creation_output.xml';
 
 const loyalty_point_coeff = 0.08;
@@ -130,4 +130,4 @@ app.use((err, req, res, next) => {
 //     });
 // }
 
-module.exports = app;
+export default app;

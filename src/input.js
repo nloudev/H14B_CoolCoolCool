@@ -1,5 +1,5 @@
-const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'node:fs';
+import path from'node:path';
 
 function create_xml(inputs) {
   if (!inputs || !inputs.order) return;
@@ -156,4 +156,4 @@ function getPayableAmount(inputs) {
   return (getLineExtension(inputs) + getTaxAmount(inputs));
 }
 
-module.exports = { create_xml, getLineExtension, getTaxAmount, getPayableAmount };
+export { create_xml, getLineExtension, getPayableAmount, getTaxAmount };
