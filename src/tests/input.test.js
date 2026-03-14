@@ -1,3 +1,20 @@
+import { jest } from '@jest/globals';
+
+jest.mock('@prisma/client', () => {
+  const mPrisma = {
+    order: {
+      deleteMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn()
+    },
+    $disconnect: jest.fn()
+  };
+
+  return {
+    PrismaClient: jest.fn(() => mPrisma)
+  };
+});
+
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
@@ -79,6 +96,30 @@ test('HTTP 422: should return error for missing required fields', async () => {
 });
 
 test('test create_xml through server', async ()=>{
+    prisma.order.create.mockResolvedValue({
+        orderId: 'ORD-2025-001',
+        status: 'order placed',
+        totalCost: 755.97,
+        taxAmount: 63,
+        payableAmount: 692.97,
+        anticipatedMonetaryTotal: 629.97,
+        loyaltyPointsEarned: 55,
+        loyaltyPointsRedeemed: 0,
+        createdAt: new Date()
+    });
+
+    prisma.order.findUnique.mockResolvedValue({
+        orderId: 'ORD-2025-001',
+        status: 'order placed',
+        totalCost: 755.97,
+        taxAmount: 63,
+        payableAmount: 692.97,
+        anticipatedMonetaryTotal: 629.97,
+        loyaltyPointsEarned: 55,
+        loyaltyPointsRedeemed: 0,
+        createdAt: new Date()
+    });
+
     const response = await fetch(`${url}/orders`, {
         method: 'POST',
         headers: { 
@@ -121,8 +162,55 @@ test('test create_xml through server', async ()=>{
     });
 });
 
-
 test('test multiple creations through server, database correct', async ()=>{
+    prisma.order.create
+        .mockResolvedValueOnce({
+            orderId: 'ORD-2025-001',
+            status: 'order placed',
+            totalCost: 755.97,
+            taxAmount: 63,
+            payableAmount: 692.97,
+            anticipatedMonetaryTotal: 629.97,
+            loyaltyPointsEarned: 55,
+            loyaltyPointsRedeemed: 0,
+            createdAt: new Date()
+        })
+        .mockResolvedValueOnce({
+            orderId: 'ORD-2025-002',
+            status: 'order placed',
+            totalCost: 755.97,
+            taxAmount: 63,
+            payableAmount: 692.97,
+            anticipatedMonetaryTotal: 629.97,
+            loyaltyPointsEarned: 55,
+            loyaltyPointsRedeemed: 0,
+            createdAt: new Date()
+        });
+
+    prisma.order.findUnique
+        .mockResolvedValueOnce({
+            orderId: 'ORD-2025-001',
+            status: 'order placed',
+            totalCost: 755.97,
+            taxAmount: 63,
+            payableAmount: 692.97,
+            anticipatedMonetaryTotal: 629.97,
+            loyaltyPointsEarned: 55,
+            loyaltyPointsRedeemed: 0,
+            createdAt: new Date()
+        })
+        .mockResolvedValueOnce({
+            orderId: 'ORD-2025-002',
+            status: 'order placed',
+            totalCost: 755.97,
+            taxAmount: 63,
+            payableAmount: 692.97,
+            anticipatedMonetaryTotal: 629.97,
+            loyaltyPointsEarned: 55,
+            loyaltyPointsRedeemed: 0,
+            createdAt: new Date()
+        });
+
     const response = await fetch(`${url}/orders`, {
         method: 'POST',
         headers: { 
