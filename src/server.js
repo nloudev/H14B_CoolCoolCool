@@ -56,6 +56,7 @@ app.get('/health', (req, res) => {
 });
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// POST route
 app.post('/orders', async (req, res) => {
     const { 
         order, 
@@ -116,6 +117,49 @@ app.post('/orders', async (req, res) => {
             detail: error.message,
             stack: error.stack 
         }); 
+    }
+});
+
+// GET route
+app.get('/orders/:id', async (req, res) => {
+
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || authHeader === 'Invalid token') {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const orderId = req.params.id;
+
+    try {
+
+        const found = await prisma.order.findUnique({
+            where: { orderId: orderId }
+        });
+
+        if (!found) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        const xml_output = create_xml(found.inputData);
+
+        res.status(200).json({
+            orderId: found.orderId,
+            status: found.status,
+            totalCost: found.totalCost,
+            taxAmount: found.taxAmount,
+            payableAmount: found.payableAmount,
+            anticipatedMonetaryTotal: found.anticipatedMonetaryTotal,
+            createdAt: found.createdAt,
+            ublDocument: xml_output
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Vercel Error",
+            detail: error.message,
+            stack: error.stack
+        });
     }
 });
 

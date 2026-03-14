@@ -277,11 +277,46 @@ test('GET /orders/{id} HTTP 401: invalid token', async () => {
     expect(response.status).toBe(401);
 });
 
+test('GET /orders/{id} HTTP 401: missing token', async () => {
+
+    const response = await fetch(`${url}/orders/1`, {
+        method: 'GET'
+    });
+
+    expect(response.status).toBe(401);
+});
+
 test('GET /orders/{id} HTTP 404: order not found', async () => {
 
     prisma.order.findUnique.mockResolvedValue(null);
 
     const response = await fetch(`${url}/orders/999`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Valid token'
+        }
+    });
+
+    expect(response.status).toBe(404);
+});
+
+test('GET /orders/{id} HTTP 404: invalid id format', async () => {
+
+    const response = await fetch(`${url}/orders/invalid-id`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Valid token'
+        }
+    });
+
+    expect(response.status).toBe(404);
+});
+
+test('GET /orders/{id} HTTP 404: extremely large id', async () => {
+
+    prisma.order.findUnique.mockResolvedValue(null);
+
+    const response = await fetch(`${url}/orders/999999999999`, {
         method: 'GET',
         headers: {
             'Authorization': 'Valid token'
@@ -300,7 +335,8 @@ test('GET /orders/{id} HTTP 200: retrieve order successfully', async () => {
         taxAmount: 63,
         payableAmount: 692.97,
         anticipatedMonetaryTotal: 629.97,
-        createdAt: new Date()
+        createdAt: new Date(),
+        inputData: JSON.parse(creation_input1)
     });
 
     const response = await fetch(`${url}/orders/ORD-2025-001`, {
@@ -323,5 +359,81 @@ test('GET /orders/{id} HTTP 200: retrieve order successfully', async () => {
         anticipatedMonetaryTotal: 629.97,
         createdAt: expect.any(String),
         ublDocument: expect.any(String)
+    });
+});
+
+test('GET /orders/{id} HTTP 200: order exists but no inputData', async () => {
+
+    prisma.order.findUnique.mockResolvedValue({
+        orderId: 'ORD-2025-003',
+        status: 'order placed',
+        totalCost: 100,
+        taxAmount: 10,
+        payableAmount: 110,
+        anticipatedMonetaryTotal: 100,
+        createdAt: new Date(),
+        inputData: null
+    });
+
+    const response = await fetch(`${url}/orders/ORD-2025-003`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Valid token'
+        }
+    });
+
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+
+    expect(data).toMatchObject({
+        orderId: 'ORD-2025-003'
+    });
+});
+
+test('GET /orders/{id} multiple retrievals', async () => {
+
+    prisma.order.findUnique.mockResolvedValue({
+        orderId: 'ORD-2025-001',
+        status: 'order placed',
+        totalCost: 755.97,
+        taxAmount: 63,
+        payableAmount: 692.97,
+        anticipatedMonetaryTotal: 629.97,
+        createdAt: new Date(),
+        inputData: JSON.parse(creation_input1)
+    });
+
+    const response1 = await fetch(`${url}/orders/ORD-2025-001`, {
+        headers: { Authorization: 'Valid token' }
+    });
+
+    const response2 = await fetch(`${url}/orders/ORD-2025-001`, {
+        headers: { Authorization: 'Valid token' }
+    });
+
+    expect(response1.status).toBe(200);
+    expect(response2.status).toBe(200);
+});
+
+test('GET /orders/{id} HTTP 500: database failure', async () => {
+
+    prisma.order.findUnique.mockRejectedValue(
+        new Error("Database connection failed")
+    );
+
+    const response = await fetch(`${url}/orders/ORD-2025-001`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Valid token'
+        }
+    });
+
+    expect(response.status).toBe(500);
+
+    const data = await response.json();
+
+    expect(data).toMatchObject({
+        message: "Vercel Error"
     });
 });
