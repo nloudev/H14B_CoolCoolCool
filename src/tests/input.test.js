@@ -1,21 +1,19 @@
 import { jest } from '@jest/globals';
 
-jest.mock('@prisma/client', () => {
-  const mPrisma = {
-    order: {
-      deleteMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn()
-    },
-    $disconnect: jest.fn()
-  };
+const mPrisma = {
+  order: {
+    deleteMany: jest.fn(),
+    findUnique: jest.fn(),
+    create: jest.fn()
+  },
+  $disconnect: jest.fn()
+};
 
-  return {
-    PrismaClient: jest.fn(() => mPrisma)
-  };
-});
+await jest.unstable_mockModule('@prisma/client', () => ({
+  PrismaClient: jest.fn(() => mPrisma)
+}));
 
-import { PrismaClient } from '@prisma/client';
+const { PrismaClient } = await import('@prisma/client');
 const prisma = new PrismaClient();
 
 import fs from 'fs';
