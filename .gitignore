@@ -5,3 +5,4 @@ npm-debug.log*
 /src/generated/prisma
 .vercel
 .env*.local
+/coverage
