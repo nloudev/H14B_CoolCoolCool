@@ -52,7 +52,7 @@ app.use(express.json());
 
 // --- ROUTES ---
 app.get('/health', (req, res) => {
-  res.json({ status: "ok", uptime: process.uptime(), timestamp:  new Date().toISOString()});
+  res.json({ status: "ok", uptime: process.uptime(), timestamp: new Date().toISOString() });
 });
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -159,6 +159,76 @@ app.get('/orders/:id', async (req, res) => {
             message: "Vercel Error",
             detail: error.message,
             stack: error.stack
+        });
+    }
+});
+
+/**
+ * @swagger
+ * /orders/{id}:
+ *   delete:
+ *     summary: Delete an order
+ *     tags:
+ *       - Orders
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the order to delete
+ *     responses:
+ *       200:
+ *         description: Order deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Order deleted successfully
+ *                 id:
+ *                   type: string
+ *                 deletedAt:
+ *                   type: string
+ *       401:
+ *         description: Unauthorised
+ *       404:
+ *         description: Order not found
+ */
+app.delete('/orders/:id', async (req, res) => {
+    const { id } = req.params;
+
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || authHeader === 'Invalid token') {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const found = await prisma.order.findUnique({
+            where: { orderId: id }
+        });
+
+        if (!found) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        await prisma.order.delete({
+            where: { orderId: id }
+        });
+
+        res.status(200).json({
+            message: 'Order deleted successfully',
+            id: id,
+            deletedAt: new Date().toISOString()
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: 'Internal server error',
+            detail: error.message
         });
     }
 });
