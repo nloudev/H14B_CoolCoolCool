@@ -1,78 +1,36 @@
 # H14B_CoolCoolCool
 
-Minimal Node.js + Express API with Swagger documentation.
+Order Creation API that generates UBL 2.1 XML documents from structured JSON input. 
+Built as part of a SaaS ecosystem for digital trade document exchange.
 
-## Run locally
+## Tech Stack
+- Node.js + Express
+- PostgreSQL (Supabase)
+- Prisma ORM
+- Swagger UI for API documentation
+- Jest for testing
+- Deployed on Vercel
 
-1. Install dependencies:
+## Environment Variables
+Create a `.env` file in the project root:
+DATABASE_URL="postgresql://..."
 
-	```bash
-	npm install
-	```
+## Run Tests
+npm test
 
-2. Start the server:
+## API Endpoints - MVP Sprint 2
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | /health | Health check |
+| POST | /orders | Create order and generate UBL XML |
+| GET | /orders/:id | Retrieve order and UBL XML |
+| PUT | /orders/:id | Update order and regenerate UBL XML |
+| DELETE | /orders/:id | Delete an order |
+| GET | /orders | Retrieve all order and related UBL XML optianlly filtered by order status and/or buyerId|
 
-	```bash
-	npm start
-	```
-
-3. Open:
-
-- API health: `http://localhost:3000/health`
+## Swagger Documentation
+- Production url: https://h14-b-cool-cool-cool.vercel.app/api-docs
 - Swagger UI: `http://localhost:3000/api-docs`
-- OpenAPI JSON: `http://localhost:3000/openapi.json`
-
-
-## TODO for MVP:
-
-Look at expected input/output in /src
-
-Write the `POST /orders` endpoint that accepts the JSON and returns the XML
-
-Write the `GET /orders/{id}` endpoint that retrieves a stored order
-
-Write the `PUT /orders/{id}` endpoint that updates a record and regenerates the XML
-
-Write the `DELETE /orders/{id}` endpoint that removes the record
- 
-Interfaces to implement:
-
-| Route Name | Description | Parameters | Return | CRUD |
-|---|---|---|---|---|
-| `/orders` FR-01, FR-08, FR-11 | Place a new order and generate a UBL 2.1 XML document | Body containing: `order: { id: string, issueDate: date, note: string (optional), currencyID: string, orderDocumentReference: string (optional) }` `buyer: { name: string, street: string, city: string, postalCode: string, countryCode: string, companyId: string, legalEntityId: string, taxSchemeId: string, contactName: string, contactPhone: string, contactEmail: string }` `seller: { name: string, street: string, city: string, postalCode: string, countryCode: string, companyId: string, legalEntityId: string, taxSchemeId: string, contactName: string, contactPhone: string, contactEmail: string }` `delivery: { street: string, city: string, postalCode: string, countryCode: string, requestedStartDate: date, requestedEndDate: date }` `tax: { taxTypeCode: string, taxPercent: float }` `items: array of { id: string, product: { sellersItemId: string, name: string, description: string }, quantity: int, unitCode: string, priceAmount: float }` `loyaltyPointsRedeemed: int (optional)` | HTTP 200: `{ orderId: int, status: string, totalCost: float, taxAmount: float, payableAmount: float, anticipatedMonetaryTotal: float, loyaltyPointsEarned: int, loyaltyPointsRedeemed: int, ublDocument: string (XML) }`, HTTP 400: Bad request from client, HTTP 401: Token is invalid, HTTP 422: Invalid or missing required field | POST |
-| `/orders/{id}` FR-01, FR-03 | Retrieve a stored order and its generated UBL 2.1 XML | Path: `id` (int) | HTTP 200: `{ orderId: int, status: string, totalCost: float, taxAmount: float, payableAmount: float, anticipatedMonetaryTotal: float, createdAt: datetime, ublDocument: string (XML) }`, HTTP 401: Token is invalid, HTTP 404: Order not found | GET |
-| `/orders/{id}` FR-01, FR-03 | Update order fields and regenerate UBL 2.1 XML | Path: `id` (int) Body containing (all optional, at least one required): `order: { issueDate: date, note: string, currencyID: string, orderDocumentReference: string }` `buyer: { name: string, street: string, city: string, postalCode: string, countryCode: string, companyId: string, legalEntityId: string, taxSchemeId: string, contactName: string, contactPhone: string, contactEmail: string }` `seller: { name: string, street: string, city: string, postalCode: string, countryCode: string, companyId: string, legalEntityId: string, taxSchemeId: string, contactName: string, contactPhone: string, contactEmail: string }` `delivery: { street: string, city: string, postalCode: string, countryCode: string, requestedStartDate: date, requestedEndDate: date }` `tax: { taxTypeCode: string, taxPercent: float }` `items: array of { id: string, product: { sellersItemId: string, name: string, description: string }, quantity: int, unitCode: string, priceAmount: float }` | HTTP 200: `{ orderId: int, status: string, totalCost: float, taxAmount: float, payableAmount: float, anticipatedMonetaryTotal: float, ublDocument: string (XML) }`, HTTP 400: Bad request from client HTTP 401: Token is invalid HTTP, 404: Order not found, HTTP 422: No valid fields provided | PUT |
-| `/orders/{id}` FR-01 | Delete an order record | Path: `id` (int) | HTTP 200: `{ message: string }`, HTTP 401: Token is invalid HTTP 404: Order not found | DELETE |
-
-
-Feilds calculated by the API (not in JSON input):
-
-
-`Per item:
-LineExtensionAmount = quantity × priceAmount
-e.g.
-LINE-1: 2 × 299.99 = 599.98
-LINE-2: 1 × 29.99 = 29.99`
-
-
-`BaseQuantity = always 1 (hardcoded, not passed)`
-
-`Tax total:
-TaxableAmount = sum of all LineExtensionAmounts = 599.98 + 29.99 = 629.97
-TaxAmount = TaxableAmount × (taxPercent / 100) = 629.97 × 0.10 = 63.00`
-
-`Anticipated monetary total:
-LineExtensionAmount = sum of all line LineExtensionAmounts = 629.97
-PayableAmount = LineExtensionAmount + TaxAmount = 629.97 + 63.00 = 692.97`
-
-LoyaltyPoints are added based on a coefficient * PayableAmount.
-
-Also auto-generated (not in JSON, not calculated from inputs):
-
-`UBLVersionID = always hardcoded as "2.1"`
-`TaxScheme/ID in TaxSubtotal = copied from tax.taxTypeCode = "GST"`
-`currencyID attribute on every monetary amount = copied from order.currencyID = "AUD"`
-
 
 ## Inputs: Accepted & Omitted
 
