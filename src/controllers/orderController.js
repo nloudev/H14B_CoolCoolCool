@@ -18,17 +18,24 @@ export async function postOrder(req, res) {
     const payableAmount = Number(getPayableAmount(req.body).toFixed(2));
     const lineExtensionAmount = getLineExtension(req.body);
 
-    await createOrder({
-      orderId: order.id,
-      status: 'order placed',
-      inputData: req.body,
-      totalCost: taxAmount + payableAmount,
-      taxAmount,
-      payableAmount,
-      anticipatedMonetaryTotal: lineExtensionAmount,
-      loyaltyPointsEarned: Math.round(payableAmount * LOYALTY_COEFF),
-      loyaltyPointsRedeemed: 0,
-    });
+    try {
+      await createOrder({
+        orderId: order.id,
+        status: 'order placed',
+        inputData: req.body,
+        totalCost: taxAmount + payableAmount,
+        taxAmount,
+        payableAmount,
+        anticipatedMonetaryTotal: lineExtensionAmount,
+        loyaltyPointsEarned: Math.round(payableAmount * LOYALTY_COEFF),
+        loyaltyPointsRedeemed: 0,
+      });
+    } catch (error) {
+    console.error(error);
+          return res.status(400).json({
+        error: "Duplicate order: An order with this ID already exists.",
+      });
+    }
 
     return res.status(200).json({
       orderId: order.id,
@@ -42,7 +49,6 @@ export async function postOrder(req, res) {
       ublDocument: xml_output
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ error: error.message });
   }
 }
@@ -52,7 +58,7 @@ export async function getOrder(req, res) {
 
   try {
     const found = await getOrderById(orderId);
-
+    
     if (!found) {
       return res.status(404).json({ error: 'Order not found' });
     }

@@ -1,4 +1,5 @@
 import { jest } from '@jest/globals';
+import { Prisma } from '@prisma/client';
 import fs from 'fs';
 
 const mPrisma = {
@@ -162,5 +163,40 @@ describe('POST /orders', () => {
 
     expect(response1.status).toBe(200);
     expect(response2.status).toBe(200);
+  });
+
+  test('HTTP 400: duplicate order', async () => {
+    const prismaDuplicateError = new Prisma.PrismaClientKnownRequestError(
+      'Unique constraint failed',
+      { code: 'P2002', clientVersion: '5.0.0' }
+    );
+    prisma.order.create
+      .mockResolvedValueOnce({
+        orderId: 'ORD-2025-001',
+        status: 'order placed',
+        totalCost: 755.97,
+        taxAmount: 63,
+        payableAmount: 692.97,
+        anticipatedMonetaryTotal: 629.97,
+        loyaltyPointsEarned: 55,
+        loyaltyPointsRedeemed: 0,
+        createdAt: new Date()
+      })
+    .mockRejectedValueOnce(prismaDuplicateError);
+
+    const response1 = await fetch(`${url}/orders`, {
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json', Authorization: 'Valid token' },
+      body: creation_input1
+    });
+
+    const response2 = await fetch(`${url}/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Valid token' },
+      body: creation_input1
+    });
+
+    expect(response1.status).toBe(200);
+    expect(response2.status).toBe(400);
   });
 });
