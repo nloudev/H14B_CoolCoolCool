@@ -1,5 +1,5 @@
 import { create_xml, getLineExtension, getTaxAmount, getPayableAmount } from '../services/xmlService.js';
-import { createOrder, getOrderById, deleteOrderById } from '../services/orderService.js';
+import { createOrder, getOrderById, updateOrder, deleteOrderById } from '../services/orderService.js';
 
 const LOYALTY_COEFF = 0.08;
 
@@ -100,5 +100,56 @@ export async function deleteOrder(req, res) {
     });
   }
 }
-  
+
+export async function putOrder(req, res) {
+  const orderId = req.params.id;
+
+  if (!req.body || Object.keys(req.body).length === 0) {
+    return res.status(422).json({ error: 'No valid fields provided.' });
+  }
+
+  try {
+    const existing = await getOrderById(orderId);
+
+    if (!existing) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    const mergedInput = {
+      order: { ...existing.inputData.order, ...req.body.order },
+      buyer: { ...existing.inputData.buyer, ...req.body.buyer },
+      seller: { ...existing.inputData.seller, ...req.body.seller },
+      delivery: { ...existing.inputData.delivery, ...req.body.delivery },
+      tax: { ...existing.inputData.tax, ...req.body.tax },
+      items: req.body.items || existing.inputData.items,
+    };
+
+    const xml_output = create_xml(mergedInput);
+    const taxAmount = Number(getTaxAmount(mergedInput).toFixed(2));
+    const payableAmount = Number(getPayableAmount(mergedInput).toFixed(2));
+    const lineExtensionAmount = getLineExtension(mergedInput);
+
+    await updateOrder(orderId, {
+      inputData: mergedInput,
+      totalCost: taxAmount + payableAmount,
+      taxAmount,
+      payableAmount,
+      anticipatedMonetaryTotal: lineExtensionAmount,
+    });
+
+    return res.status(200).json({
+      orderId,
+      status: existing.status,
+      totalCost: taxAmount + payableAmount,
+      taxAmount,
+      payableAmount,
+      anticipatedMonetaryTotal: lineExtensionAmount,
+      ublDocument: xml_output
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
+}
+
 
