@@ -193,7 +193,7 @@ app.get('/orders/:id', async (req, res) => {
  *                 deletedAt:
  *                   type: string
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorised
  *       404:
  *         description: Order not found
  */
