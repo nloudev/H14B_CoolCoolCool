@@ -165,6 +165,8 @@ router.get('/:id', (req, res, next) => {
  *     summary: Delete an order
  *     tags:
  *       - Orders
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
