@@ -1,45 +1,18 @@
 import 'dotenv/config';
 import express from 'express';
-import swaggerUi from 'swagger-ui-express';
-import swaggerJSDoc from 'swagger-jsdoc';
 import orderRoutes from './routes/orders.js';
 import healthRoutes from './routes/health.js';
-import { fileURLToPath } from 'url';
-import path from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import docsRoutes from './routes/docs.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-const swaggerDefinition = {
-  openapi: '3.0.0',
-  info: { title: 'CoolCoolCool API', version: '1.0.0' },
-  servers: [
-    { url: 'https://h14-b-cool-cool-cool.vercel.app', description: 'Production' },
-    { url: `http://localhost:${port}`, description: 'Local' }
-  ],
-  components: {
-    securitySchemes: {
-      bearerAuth: {
-        type: 'http',
-        scheme: 'bearer'
-      }
-    }
-  }
-};
-
-const options = { 
-  swaggerDefinition, 
-  apis: [path.join(__dirname, './routes/*.js')]
-};
-const swaggerSpec = swaggerJSDoc(options);
 
 app.use(express.json());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/orders', orderRoutes);
 app.use('/health', healthRoutes);
+app.use('/api-docs', docsRoutes);
+
 
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
