@@ -26,7 +26,7 @@ npm test
 | GET | /orders/:id | Retrieve order and UBL XML |
 | PUT | /orders/:id | Update order and regenerate UBL XML |
 | DELETE | /orders/:id | Delete an order |
-| GET | /orders | Retrieve all order and related UBL XML |
+| GET | /orders | Retrieve all order and related UBL XML optianlly filtered by order status and/or buyerId|
 
 ## Swagger Documentation
 - Production url: https://h14-b-cool-cool-cool.vercel.app/api-docs
